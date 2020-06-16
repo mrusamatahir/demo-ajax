@@ -1,0 +1,76 @@
+﻿@model DemoAjax.VMs.DemoVM
+@{
+    ViewData["Title"] = "Add";
+}
+
+
+
+<h3>Upload File(s)</h3>
+<table class="table" id="myTable">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>RegNo</th>
+            <th>File</th>
+        </tr>
+    </thead>
+    <tbody id="tBody"></tbody>
+</table>
+
+<button id="btnUpload">Upload</button>
+
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            AddRow();
+            var totalSize = 0;
+            function validate() {
+                var valid = true;
+                $.each($('#tBody tr'), function (i) {
+                    var row = $(this);
+                    var fileInput = row.find('.img')[0];
+                    var f = fileInput.files;
+                    $.each(f, function (i) {
+                        var size = (f[i].size / 1024 / 1024).toFixed(2);
+                        totalSize += parseFloat(size);
+                    })
+                    if (totalSize > 28) {
+                        alert('File size should be less than 28 MB');
+                        valid = false;
+                        return valid;
+                    }
+                });
+                return valid
+            }
+            $("#btnUpload").click(function () {
+                if (validate()) {
+                    var img = new FormData();
+                    $.each($('#tBody tr'), function (i) {
+                        var row = $(this);
+                        var fileInput = row.find('.img')[0];
+                        var f = fileInput.files;
+                        alert(f.name)
+                        $.each(f, function (j) {
+                            img.append("vm[" + i + "].Files", f[j]);
+                        });
+                        img.append("vm[" + i + "].Name", row.find('.Name').val());
+                        img.append("vm[" + i + "].Reg", row.find('.Reg').val());
+                    });
+                    $.ajax({
+                        type: "POST",
+                        url: "/FileUpload/UploadFiles",
+                        data: img,
+                        processData: false,
+                        contentType: false,
+                        success: function (dat) {
+                        },
+                        error: function (e) {
+                        }
+                    });
+                }                
+            });
+        });
+    </script>
+
+}

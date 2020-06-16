@@ -1,0 +1,63 @@
+﻿@model DemoAjax.VMs.DemoVM
+@{
+    ViewData["Title"] = "Add";
+}
+
+<div class="row">
+    <form id="myFrom" method="post">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th style="width: 20%;">Name</th>
+                    <th style="width: 20%;">RegNo</th>
+                </tr>
+            </thead>
+            <tbody id="tBody">
+            </tbody>
+        </table>
+    </form>
+</div>
+<div class="row">
+    <div class="col-md-2">
+        <button class="btn btn-sm btn-info" id="saveButton" type="submit">Save</button>
+    </div>
+</div>
+
+<br />
+<input type="file" id="fileInput" multiple="multiple" />
+<input type="button" id="fileButton" value="Upload Files" />
+<br />
+
+@section scripts
+{
+    <script src="~/js/site.js"></script>
+    <script>
+        $('document').ready(function () {
+            $("#fileButton").click(function () {
+                var files = $("#fileInput").get(0).files;
+                var fileData = new FormData();
+
+                for (var i = 0; i < files.length; i++) {
+                    fileData.append("fileInput", files[i]);
+                }
+
+                $.ajax({
+                    type: "post",
+                    url: "/AjaxFileUpload/UploadFiles",
+                    dataType: "json",
+                    contentType: false, // Not to set any content header
+                    processData: false, // Not to process data
+                    data: fileData,
+                    success: function (result, status, xhr) {
+                        alert(result);
+                    },
+                    error: function (xhr, status, error) {
+                        alert(status);
+                    }
+                });
+            });
+
+        })
+
+    </script>
+}
